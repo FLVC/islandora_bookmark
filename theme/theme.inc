@@ -8,17 +8,17 @@
 /**
  * Implements hook_preprocess_theme().
  */
-function islandora_bookmark_preprocess_islandora_bookmark_list_columns(array &$variables) {
+function template_preprocess_islandora_bookmark_list_columns(array &$variables) {
   $variables['column_count'] = 3;
   $list_links = theme(
     'islandora_bookmark_list_links',
-    array('id' => $variables['id'], 'current' => 'manage')
+    array('bookmark_id' => $variables['bookmark_id'], 'current' => 'manage')
   );
   $variables['list_links'] = drupal_render($list_links);
   drupal_add_css(drupal_get_path('module', 'islandora_bookmark') . '/css/list-columns.css');
 
   module_load_include('inc', 'islandora_bookmark', 'includes/api');
-  $pids = islandora_bookmark_list_pids_query($variables['id']);
+  $pids = islandora_bookmark_list_pids_query($variables['bookmark_id']);
   $pid_count = 0;
   foreach ($pids as $pid) {
     // Drop the PIDs into baskets corresponding to columns.
@@ -63,7 +63,7 @@ function theme_islandora_bookmark_list_links(array &$variables) {
     $links['manage'] = array(
       '#markup' => l(
         t('Admin'),
-        "islandora-bookmark/listid/{$variables['id']}/manage",
+        "islandora-bookmark/listid/{$variables['bookmark_id']}/manage",
         array('attributes' => array('class' => array('list-links')))
       ),
     );
@@ -72,7 +72,7 @@ function theme_islandora_bookmark_list_links(array &$variables) {
     $links['islandora_bookmark_list_columns'] = array(
       '#markup' => l(
         t('View'),
-        "islandora-bookmark/listid/{$variables['id']}/view",
+        "islandora-bookmark/listid/{$variables['bookmark_id']}/view",
         array('attributes' => array('class' => array('list-links')))
       ),
     );
@@ -83,10 +83,45 @@ function theme_islandora_bookmark_list_links(array &$variables) {
       'path' => $module_path . '/images/rss.png',
       'title' => t('Present Bookmark list in RSS form'),
       'attributes' => array(),
-        )), "islandora-bookmark/listid/{$variables['id']}/rss", array('html' => TRUE)),
+        )), "islandora-bookmark/listid/{$variables['bookmark_id']}/rss", array('html' => TRUE)),
     '#prefix' => '<div id="islandora-bookmark-rss-format">',
     '#suffix' => '</div>',
   );
   drupal_add_css($module_path . '/css/list-links.css');
   return $links;
+}
+
+/**
+ * Prepares variables for islandora_bookmark_list_info templates.
+ *
+ * Default template: islandora-bookmark-list-info.tpl.php.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - bookmark: A Bookmark object for which to render info.
+ *   We populate:
+ *   - user: The owner's name.
+ *   - name: The name of the list.
+ *   - description: The "description" value associated with the list.
+ *   - link: An absolute URL to the current path.
+ */
+function template_preprocess_islandora_bookmark_list_info(array &$variables) {
+  $variables['name'] = $variables['bookmark']->bookmarkName;
+  $owner = user_load($variables['bookmark']->bookmarkOwner);
+  $variables['user'] = $owner->name;
+  $variables['description'] = $variables['bookmark']->bookmarkDescription;
+  $variables['link'] = url(current_path(), array('absolute' => TRUE));
+}
+
+/**
+ * Wrapper to display a view of a bookmark.
+ *
+ * @param string $list_id
+ *   A string representing a bookmark object.
+ *
+ * @return string
+ *   The HTML to be rendered for the list columns.
+ */
+function islandora_bookmark_view_bookmark($list_id) {
+  return theme('islandora_bookmark_list_columns', array('bookmark_id' => $list_id));
 }

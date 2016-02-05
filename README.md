@@ -32,11 +32,17 @@ Enable 'Bookmark' in Administration » Islandora » Solr index » Solr Settings 
 
 Set the permissions in Administration » People (admin/people/permissions). There are permissions to administer, use, and share bookmarks. Anonymous users can never share bookmarks.
 
+The admin page has an option to create a default bookmark list for each individual user (Users cannot delete their default lists). The first time you enable default bookmark lists, you will have to log out and log back in before you can view your default list.
+
+If a user is anonymous, adds items to a bookmark list, and then logs in those items will be added to a new list, or appended to their default list.
+
 ### Customization
 
 Table cells referencing the bookmarked objects in both bookmark lists and bookmark Solr results can be modified. One way is by overriding the default template file located at `theme/islandora-bookmark-object-display.tpl.php`. Another way is to use `hook_islandora_bookmark_object_markup()` to let another module define the content and markup.
 
-The admin page has an option that allows for a single default Bookmark list be created for each individual user. This list differs in the fact that it cannot be deleted.
+## Documentation
+
+Further documentation for this module is available at [our wiki](https://wiki.duraspace.org/display/ISLANDORA/Islandora+Bookmark).
 
 ## Troubleshooting/Issues
 
@@ -58,7 +64,7 @@ Current maintainers:
 
 ## Development
 
-If you would like to contribute to this module, please check out our helpful [Documentation for Developers](https://github.com/Islandora/islandora/wiki#wiki-documentation-for-developers) info, as well as our [Developers](http://islandora.ca/developers) section on the Islandora.ca site.
+If you would like to contribute to this module, please check out [CONTRIBUTING.md](CONTRIBUTING.md). In addition, we have helpful [Documentation for Developers](https://github.com/Islandora/islandora/wiki#wiki-documentation-for-developers) info, as well as our [Developers](http://islandora.ca/developers) section on the [Islandora.ca](http://islandora.ca) site.
 
 ## License
 
