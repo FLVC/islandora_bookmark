@@ -21,6 +21,7 @@ function islandora_bookmark_admin_settings(array $form, array &$form_state) {
     'list_type' => array(
       '#type' => 'textfield',
       '#title' => t('The name of the type of list.'),
+      '#description' => t('The unpluralized name of the type of lists such as bookmark or favorite.'),
       '#default_value' => variable_get('islandora_bookmark_type', 'bookmark'),
     ),
     'overview_page_elements' => array(
@@ -42,6 +43,7 @@ function islandora_bookmark_admin_settings(array $form, array &$form_state) {
     'create_user_default_lists' => array(
       '#type' => 'checkbox',
       '#title' => t('Create a default list for users?'),
+      '#description' => t('The list will be created the next time they log in.'),
       '#default_value' => variable_get('islandora_bookmark_create_user_default_lists', FALSE),
     ),
     'default_list_name' => array(

@@ -87,6 +87,13 @@ abstract class Bookmark implements BookmarkInterface {
   public $bookmarkName;
 
   /**
+   * The description of the object.
+   *
+   * @var string
+   */
+  public $bookmarkDescription;
+
+  /**
    * The owner of the object.
    *
    * @var int
@@ -117,10 +124,11 @@ abstract class Bookmark implements BookmarkInterface {
   /**
    * Constructor for the Bookmark object.
    */
-  public function __construct($id, $name, $owner) {
+  public function __construct($id, $name, $owner, $desc = "") {
     $this->bookmarkId = $id;
     $this->bookmarkName = $name;
     $this->bookmarkOwner = $owner;
+    $this->bookmarkDescription = $desc;
     $this->isDeletable = TRUE;
   }
 
@@ -244,7 +252,6 @@ abstract class Bookmark implements BookmarkInterface {
    *   An array of strings, representing object PIDs.
    */
   public function addPids($pids) {
-    $pids = array_filter($pids, 'islandora_object_load');
     foreach ($pids as $pid) {
       $this->addPid($pid);
     }
@@ -270,18 +277,20 @@ abstract class Bookmark implements BookmarkInterface {
    *
    * @param string $name
    *   A name for the newly created list.
+   * @param string $desc
+   *   An optional description for the list.
    *
    * @return BookmarkSession|BookmarkDatabase
    *   The BookmarkSession or BookmarkDatabase object that is created.
    */
-  public static function createNewList($name) {
+  public static function createNewList($name, $desc = "") {
     global $user;
 
     if ($user->uid === 0) {
-      return BookmarkSession::createNewList($name);
+      return BookmarkSession::createNewList($name, NULL, $desc);
     }
     else {
-      return BookmarkDatabase::createNewList($name);
+      return BookmarkDatabase::createNewList($name, 'bookmark', NULL, $desc);
     }
   }
 
@@ -302,6 +311,16 @@ abstract class Bookmark implements BookmarkInterface {
    */
   public function changeListName($name) {
     $this->bookmarkName = $name;
+  }
+
+  /**
+   * Changes the description of the object in the session or the database.
+   *
+   * @param string $description
+   *   The new description of the object.
+   */
+  public function changeDescription($description) {
+    $this->bookmarkDescription = $description;
   }
 
   /**
@@ -425,7 +444,7 @@ abstract class Bookmark implements BookmarkInterface {
     // This is the list links.
     $form['bookmark_list_links'] = theme(
       'islandora_bookmark_list_links',
-      array('id' => $this->bookmarkId, 'current' => 'manage')
+      array('bookmark_id' => $this->bookmarkId, 'current' => 'manage')
     );
 
     // Do pager calcuations to limit the number of objects displayed per page.
@@ -501,11 +520,22 @@ abstract class Bookmark implements BookmarkInterface {
       $export_styles = array();
       $export = islandora_bookmark_get_export_options();
       $export_options['default'] = t('- Export type -');
-
+      // As export options can be user configurable and want to maintain
+      // human readability through the UI need to account for the fact that
+      // some options could have spaces in them. If spaces are encountered in
+      // the $_POST Drupal will not pick them up in the form state values.
+      // As such two formats can be used one which specifics a callable
+      // and a human-readable pair and the old form.
       foreach ($export as $module_name => $export_array) {
         foreach ($export_array as $name => $export_func) {
-          $export_options[t("@module_name", array("@module_name" => $module_name))][$name] = $name;
-          $form_state['islandora_bookmark_export'][$name] = $export_func;
+          if (is_callable($export_func)) {
+            $export_options[t("@module_name", array("@module_name" => $module_name))][$name] = $name;
+            $form_state['islandora_bookmark_export'][$name] = $export_func;
+          }
+          else {
+            $export_options[t("@module_name", array("@module_name" => $module_name))][$name] = $export_func['human_readable'];
+            $form_state['islandora_bookmark_export'][$name] = $export_func['callable'];
+          }
           $export_styles[$name] = islandora_bookmark_get_export_format_options($name);
         }
       }
