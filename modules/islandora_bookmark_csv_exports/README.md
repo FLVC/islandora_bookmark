@@ -22,12 +22,22 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 Create configurations in Administration » Islandora » Islandora Utility Modules » Bookmark » CSV Exports (admin/islandora/tools/islandora-bookmark/csv_exports).
 
+## Documentation
+
+Further documentation for this module is available at [the wiki page for Islandora Bookmark](https://wiki.duraspace.org/display/ISLANDORA/Islandora+Bookmark).
+
 ## Troubleshooting/Issues
 
 Having problems or solved a problem? Check out the Islandora google groups for a solution.
 
 * [Islandora Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora)
 * [Islandora Dev Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora-dev)
+
+## Maintainers/Sponsors
+
+Current maintainers:
+
+* [Jordan Dukart](https://github.com/jordandukart)
 
 ## Development
 
